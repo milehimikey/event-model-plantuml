@@ -13,45 +13,54 @@
 '/
 
 <style>
+    ' Command — soft cornflower blue
     .command {
-        BackgroundColor #4A90D9
+        BackgroundColor #5B8FC4
         FontColor white
     }
+    ' Event — warm amber (distinct from teal in all color vision types)
     .event {
-        BackgroundColor #E8872A
+        BackgroundColor #D4882A
         FontColor white
     }
+    ' Read model — teal/cyan-blue (NOT green; remains distinct from amber under deuteranopia)
     .readmodel {
-        BackgroundColor #4A9E4A
+        BackgroundColor #2A9EB3
         FontColor white
     }
+    ' Aggregate heading
     .concept {
-        BackgroundColor #f5f0dc
-        FontColor #555
+        BackgroundColor #EDE8D8
+        FontColor #555555
     }
+    ' Automation — medium charcoal (always universally distinct)
     .automation {
-        BackgroundColor #3d3d3d
+        BackgroundColor #525252
         FontColor white
     }
+    ' Wireframe — off-white
     .wireframe {
-        BackgroundColor #ffffff
-        FontColor #333
+        BackgroundColor #F7F7F7
+        FontColor #333333
     }
     .timeline {
-        BackgroundColor black
-        LineColor black
+        BackgroundColor #444444
+        LineColor #444444
         LineThickness 2
     }
+    ' Integration — dusty mauve
     .externalsystem {
-        BackgroundColor #E8A0B4
-        FontColor #333
-    }
-    .question {
-        BackgroundColor #E74C3C
+        BackgroundColor #B8839A
         FontColor white
     }
+    ' Question — muted red
+    .question {
+        BackgroundColor #C05060
+        FontColor white
+    }
+    ' Policy — soft violet
     .policy {
-        BackgroundColor #9B59B6
+        BackgroundColor #8870B8
         FontColor white
     }
     .hidden {
@@ -62,37 +71,37 @@
     }
     .eventarrow {
         arrow {
-            LineColor #E8872A
+            LineColor #D4882A
             LineThickness 2
         }
     }
     .commandarrow {
         arrow {
-            LineColor #4A90D9
+            LineColor #5B8FC4
             LineThickness 2
         }
     }
     .automationarrow {
         arrow {
-            LineColor #3d3d3d
+            LineColor #525252
             LineThickness 2
         }
     }
     .defaultarrow {
         arrow {
-            LineColor #333333
+            LineColor #555555
             LineThickness 2
         }
     }
     .externalsystemarrow {
         arrow {
-            LineColor #E8A0B4
+            LineColor #B8839A
             LineThickness 2
         }
     }
     .policyarrow {
         arrow {
-            LineColor #9B59B6
+            LineColor #8870B8
             LineThickness 2
         }
     }
