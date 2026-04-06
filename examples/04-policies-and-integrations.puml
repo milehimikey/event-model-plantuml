@@ -1,0 +1,53 @@
+@startuml
+' Demonstrates $policy (business invariants) and $integration (external systems).
+'
+' Policies react to events within the bounded context and enforce business rules.
+' Integrations represent third-party service boundaries.
+
+!include_once https://raw.githubusercontent.com/milehimikey/event-model-plantuml/main/event-model-plantuml.iuml
+
+$enableAutoAlias()
+$enableAutoLayout()
+
+$actor(Customer)
+$actor(BackOffice)
+$aggregate(Account, $context = "Account Context")
+$aggregate(Order, $context = "Order Context")
+$aggregate(Payment, $context = "Payment Context")
+
+' --- Registration with uniqueness invariant ---
+$screen(Registration Screen, Customer)
+$command(Register Account, $schema = "email:string:required, password:string:required")
+$policy(Email Must Be Unique, $schema = "Reject if email already registered\nReturn validation error to caller")
+$event(Account Registered, Account, $schema = "accountId:UUID:required, email:string:required, registeredAt:timestamp:required")
+$readmodel(Account Profile, $schema = "accountId, email, status, registeredAt")
+$arrow(AccountProfile, RegistrationScreen)
+
+' --- Order placement with inventory check ---
+$screen(Product Catalog, Customer)
+$command(Place Order, $schema = "accountId:UUID:required, productId:UUID:required, quantity:int:required")
+$policy(Sufficient Inventory Required, $schema = "Reject if quantity > stock\nReserve stock on approval")
+$event(Order Placed, Order, $schema = "orderId:UUID:required, accountId:UUID:required, productId:UUID:required, quantity:int:required")
+$readmodel(My Orders, $schema = "orderId, productName, quantity, status, placedAt")
+$arrow(MyOrders, ProductCatalog)
+
+' --- Payment with external gateway integration ---
+$screen(Checkout, Customer)
+$command(Submit Payment, $schema = "orderId:UUID:required, cardToken:string:required, amount:Money:required")
+$integration(Stripe, Payment, $schema = "POST /v1/charges\ncardToken: string\namount: int (cents)\ncurrency: string")
+$event(Payment Attempted, Payment, $schema = "orderId:UUID:required, transactionId:string, amount:Money:required")
+$policy(Payment Amount Must Match Order, $schema = "Verify amount == order total\nReject on mismatch")
+$event(Payment Accepted, Payment, $schema = "orderId:UUID:required, transactionId:string:required, acceptedAt:timestamp:required")
+$readmodel(Payment Receipt, $schema = "orderId, transactionId, amount, status, acceptedAt")
+$arrow(PaymentReceipt, Checkout)
+
+' --- Back office fraud review ---
+$screen(Fraud Review Queue, BackOffice)
+$command(Flag As Fraudulent, $schema = "orderId:UUID:required, reason:string:required")
+$policy(Only Pending Orders Can Be Flagged, $schema = "Reject if order status != pending")
+$event(Order Flagged As Fraudulent, Order, $schema = "orderId:UUID:required, reason:string:required, flaggedAt:timestamp:required")
+$readmodel(Fraud Cases, $schema = "orderId, accountId, reason, flaggedAt")
+$arrow(FraudCases, FraudReviewQueue)
+
+$renderEventModelingDiagram()
+@enduml

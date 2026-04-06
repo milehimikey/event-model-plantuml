@@ -1,0 +1,26 @@
+@startuml
+' Quickstart — minimum viable event model diagram.
+' Copy this file and replace the domain with your own.
+' All procedure calls must be on a single line (PlantUML preprocessor limitation).
+
+!include_once https://raw.githubusercontent.com/milehimikey/event-model-plantuml/main/event-model-plantuml.iuml
+
+$enableAutoAlias()
+$enableAutoLayout()
+
+' 1. Define who interacts with the system
+$actor(User)
+
+' 2. Define the domain aggregates that own events
+$aggregate(Order, $context = "Your Bounded Context")
+
+' 3. Model the flow left to right: screen → command → event → read model
+$screen(Home Screen, User)
+$command(Do Something, $schema = "fieldA:TypeA:required, fieldB:TypeB:optional")
+$event(Something Happened, Order, $schema = "id:UUID:required, happenedAt:timestamp:required")
+$readmodel(Things That Happened, $schema = "id, summary, happenedAt")
+$arrow(ThingsThatHappened, HomeScreen)
+
+' 4. Always call this last
+$renderEventModelingDiagram()
+@enduml

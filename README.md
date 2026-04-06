@@ -59,17 +59,37 @@ $renderEventModelingDiagram()
 
 ## Examples
 
-### Basic flow — actors, aggregates, bounded contexts
+### [00] Quickstart — minimum viable diagram
+
+![Quickstart](examples/00-quickstart.png)
+
+### [01] Basic flow — actors, aggregates, bounded contexts
 
 ![Basic example](examples/01-basic.png)
 
-### Automation lane — `$automation`, `$translation`, `$saga`, `$processor`
+### [02] Automation lane — `$automation`, `$translation`, `$saga`, `$processor`
 
 ![Automation example](examples/02-automation.png)
 
-### Schema annotations and slice decomposition
+### [03] Schema annotations and slice decomposition
 
 ![Schema and slices example](examples/03-schema-and-slices.png)
+
+### [04] Policies and integrations
+
+![Policies and integrations](examples/04-policies-and-integrations.png)
+
+### [05] Complete subscription billing system
+
+Full model with registration, subscriptions, billing automation, failure handling, and admin reporting.
+
+![Complete subscription system](examples/05-complete-subscription-system.png)
+
+### [06] Hotel booking — full workshop domain
+
+Demonstrates all 6 Event Modeling workshop steps in a single complete diagram.
+
+![Hotel booking](examples/06-workshop-steps.png)
 
 ---
 

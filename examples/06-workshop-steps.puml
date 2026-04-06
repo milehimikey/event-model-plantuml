@@ -1,0 +1,72 @@
+@startuml
+' Demonstrates the 6-step Event Modeling workshop process using a hotel booking domain.
+' Each step builds incrementally on the previous one.
+'
+' Step 1: Brainstorm events (past-tense facts)
+' Step 2: Order events on a timeline
+' Step 3: Add UI screens (storyboard)
+' Step 4: Add commands (identify inputs)
+' Step 5: Add read models (identify outputs)
+' Step 6: Assign to actors and aggregates (swimlanes)
+
+!include_once https://raw.githubusercontent.com/milehimikey/event-model-plantuml/main/event-model-plantuml.iuml
+
+$enableAutoAlias()
+$enableAutoLayout()
+
+' Step 6: Assign swimlanes
+$actor(Guest)
+$actor(HotelStaff)
+$aggregate(Room, $context = "Reservations")
+$aggregate(Reservation, $context = "Reservations")
+$aggregate(Billing, $context = "Finance")
+
+' Step 3+4+5+6: Full storyboard with commands, events, and read models
+$screen(Room Search, Guest)
+$command(Search Rooms, $schema = "checkIn:date:required, checkOut:date:required, guests:int:required")
+$readmodel(Available Rooms, $schema = "roomId, type, capacity, pricePerNight, amenities")
+$arrow(AvailableRooms, RoomSearch)
+
+$screen(Room Detail, Guest)
+$command(Make Reservation, $schema = "roomId:UUID:required, accountId:UUID:required, checkIn:date:required, checkOut:date:required")
+$policy(Room Must Be Available, $schema = "Reject if room already booked for requested dates")
+$event(Reservation Made, Reservation, $schema = "reservationId:UUID:required, roomId:UUID:required, accountId:UUID:required, checkIn:date:required, checkOut:date:required, totalAmount:Money:required")
+$readmodel(My Reservations, $schema = "reservationId, roomType, checkIn, checkOut, status, totalAmount")
+$arrow(MyReservations, RoomDetail)
+
+$screen(Confirmation Screen, Guest)
+$arrow(MyReservations, ConfirmationScreen)
+
+$processor(Booking Confirmation Email, $schema = "Send booking summary\nInclude check-in instructions\nInclude cancellation policy")
+$eventarrow(ReservationMade, BookingConfirmationEmail)
+
+$screen(Check In Desk, HotelStaff)
+$command(Check In Guest, $schema = "reservationId:UUID:required, roomKey:string:required")
+$policy(Check In Date Must Match, $schema = "Reject if today != reservation checkIn date")
+$event(Guest Checked In, Room, $schema = "reservationId:UUID:required, roomId:UUID:required, checkedInAt:timestamp:required")
+$readmodel(Occupied Rooms, $schema = "roomId, guestName, checkIn, checkOut, reservationId")
+
+$screen(Check Out Desk, HotelStaff)
+$command(Check Out Guest, $schema = "reservationId:UUID:required")
+$event(Guest Checked Out, Room, $schema = "reservationId:UUID:required, roomId:UUID:required, checkedOutAt:timestamp:required")
+$command(Generate Bill, $schema = "reservationId:UUID:required")
+$event(Bill Generated, Billing, $schema = "billId:UUID:required, reservationId:UUID:required, baseAmount:Money:required, extras:Money, totalAmount:Money:required")
+$readmodel(Guest Bill, $schema = "billId, roomType, nights, baseAmount, extras, totalAmount")
+$screen(Bill Review, Guest)
+$arrow(GuestBill, BillReview)
+
+$command(Process Checkout Payment, $schema = "billId:UUID:required, paymentMethodId:UUID:required")
+$integration(Payment Processor, Billing, $schema = "POST /payments\namount: Money\nmethod: card | cash")
+$event(Bill Settled, Billing, $schema = "billId:UUID:required, transactionId:string, settledAt:timestamp:required")
+$readmodel(Stay Receipt, $schema = "billId, reservationId, totalAmount, paymentMethod, settledAt")
+$screen(Receipt Screen, Guest)
+$arrow(StayReceipt, ReceiptScreen)
+
+$screen(Cancellation Screen, Guest)
+$command(Cancel Reservation, $schema = "reservationId:UUID:required, reason:string:optional")
+$policy(Cancellation Policy, $schema = "Free if > 48h before checkIn\n50% fee if 24-48h before checkIn\nNo refund if < 24h before checkIn")
+$event(Reservation Cancelled, Reservation, $schema = "reservationId:UUID:required, cancelledAt:timestamp:required, refundAmount:Money")
+$readmodel(My Reservations)
+
+$renderEventModelingDiagram()
+@enduml

@@ -1,0 +1,105 @@
+@startuml
+' A complete subscription billing system demonstrating the full vocabulary:
+' actors, aggregates, bounded contexts, commands, events, read models,
+' automations, policies, integrations, and slice annotations.
+
+!include_once https://raw.githubusercontent.com/milehimikey/event-model-plantuml/main/event-model-plantuml.iuml
+
+$enableAutoAlias()
+$enableAutoLayout()
+
+' Actors
+$actor(Customer)
+$actor(Admin)
+
+' Aggregates grouped by bounded context
+$aggregate(Account, $context = "Identity")
+$aggregate(Subscription, $context = "Billing")
+$aggregate(Invoice, $context = "Billing")
+$aggregate(Payment, $context = "Billing")
+
+' ─── Slice: Register ─────────────────────────────────────────────────────────
+$beginSlice(RegisterAccount, $type = "StateChange", $description = "New customer creates an account")
+
+$screen(Sign Up, Customer)
+$command(Register Account, $schema = "email:string:required, password:string:required, name:string:required")
+$policy(Email Must Be Unique, $schema = "Reject if email already registered")
+$event(Account Registered, Account, $schema = "accountId:UUID:required, email:string:required, name:string:required, registeredAt:timestamp:required")
+$readmodel(Account Summary, $schema = "accountId, name, email, status")
+$arrow(AccountSummary, SignUp)
+
+$endSlice()
+
+' ─── Slice: Subscribe ─────────────────────────────────────────────────────────
+$beginSlice(CreateSubscription, $type = "StateChange", $description = "Customer selects a plan and subscribes")
+
+$screen(Plan Selection, Customer)
+$command(Create Subscription, $schema = "accountId:UUID:required, planId:UUID:required, paymentMethodId:UUID:required")
+$policy(Account Must Be Active, $schema = "Reject if account status != active")
+$event(Subscription Created, Subscription, $schema = "subscriptionId:UUID:required, accountId:UUID:required, planId:UUID:required, status:string:required, startedAt:timestamp:required")
+$readmodel(My Subscription, $schema = "subscriptionId, planName, status, nextBillingDate, amount")
+$arrow(MySubscription, PlanSelection)
+
+$endSlice()
+
+' ─── Slice: Monthly billing automation ────────────────────────────────────────
+$beginSlice(MonthlyBilling, $type = "Automation", $description = "System generates invoices and collects payment on the billing cycle")
+
+$saga(Billing Cycle Runner, $schema = "Runs monthly per active subscription\nGenerates invoice\nCollects payment")
+$eventarrow(SubscriptionCreated, BillingCycleRunner)
+
+$command(Generate Invoice, $schema = "subscriptionId:UUID:required, periodStart:date:required, periodEnd:date:required")
+$automationarrow(BillingCycleRunner, GenerateInvoice)
+$event(Invoice Generated, Invoice, $schema = "invoiceId:UUID:required, subscriptionId:UUID:required, amount:Money:required, dueDate:date:required")
+
+$command(Collect Payment, $schema = "invoiceId:UUID:required, paymentMethodId:UUID:required")
+$automationarrow(BillingCycleRunner, CollectPayment)
+
+$integration(Stripe, Payment, $schema = "POST /v1/payment_intents\namount: int (cents)\ncurrency: string\npayment_method: string")
+$event(Payment Collected, Payment, $schema = "invoiceId:UUID:required, transactionId:string:required, amount:Money:required, collectedAt:timestamp:required")
+$readmodel(Invoice History, $schema = "invoiceId, period, amount, status, paidAt")
+
+$endSlice()
+
+' ─── Slice: Payment failure handling ──────────────────────────────────────────
+$beginSlice(PaymentFailure, $type = "Automation", $description = "System retries failed payments and notifies customer")
+
+$event(Payment Failed, Payment, $schema = "invoiceId:UUID:required, reason:string:required, attemptedAt:timestamp:required")
+$commandarrow(CollectPayment, PaymentFailed)
+
+$automation(Retry Scheduler, $schema = "Retry after 3 days\nMax 3 attempts\nSuspend on final failure")
+$eventarrow(PaymentFailed, RetryScheduler)
+
+$processor(Payment Failure Notification, $schema = "Send email: payment failed\nInclude update payment method link")
+$eventarrow(PaymentFailed, PaymentFailureNotification)
+
+$command(Suspend Subscription, $schema = "subscriptionId:UUID:required, reason:string:required")
+$automationarrow(RetryScheduler, SuspendSubscription)
+$event(Subscription Suspended, Subscription, $schema = "subscriptionId:UUID:required, reason:string:required, suspendedAt:timestamp:required")
+$readmodel(My Subscription)
+
+$endSlice()
+
+' ─── Slice: Cancel subscription ───────────────────────────────────────────────
+$beginSlice(CancelSubscription, $type = "StateChange", $description = "Customer cancels their subscription")
+
+$screen(Account Settings, Customer)
+$command(Cancel Subscription, $schema = "subscriptionId:UUID:required, reason:string:optional")
+$policy(Active Subscription Required, $schema = "Reject if status != active or suspended")
+$event(Subscription Cancelled, Subscription, $schema = "subscriptionId:UUID:required, reason:string, cancelledAt:timestamp:required, effectiveAt:timestamp:required")
+$readmodel(My Subscription)
+$arrow(MySubscription1, AccountSettings)
+
+$endSlice()
+
+' ─── Slice: Admin reporting ────────────────────────────────────────────────────
+$beginSlice(AdminReporting, $type = "StateView", $description = "Admin views revenue and subscription metrics")
+
+$screen(Admin Dashboard, Admin)
+$readmodel(Revenue Report, $schema = "month, newSubscriptions, cancellations, mrr, churn")
+$arrow(RevenueReport, AdminDashboard)
+
+$endSlice()
+
+$renderEventModelingDiagram()
+@enduml

@@ -3,7 +3,7 @@
 ' $beginSlice / $endSlice for AI-parseable decomposition.
 ' Note: PlantUML preprocessor requires all procedure calls on a single line.
 
-!include_once ../event-model-plantuml.iuml
+!include_once https://raw.githubusercontent.com/milehimikey/event-model-plantuml/main/event-model-plantuml.iuml
 
 $enableAutoAlias()
 $enableAutoLayout()

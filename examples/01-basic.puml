@@ -1,5 +1,5 @@
 @startuml
-!include_once ../event-model-plantuml.iuml
+!include_once https://raw.githubusercontent.com/milehimikey/event-model-plantuml/main/event-model-plantuml.iuml
 
 $enableAutoAlias()
 $enableAutoLayout()
