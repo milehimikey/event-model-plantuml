@@ -1,0 +1,59 @@
+@startuml
+' Demonstrates the automation lane elements:
+'   $automation  - generic event-driven process
+'   $translation - context mapper between bounded contexts
+'   $saga        - long-running stateful process
+'   $processor   - side-effect handler
+
+!include_once ../event-model-plantuml.iuml
+
+$enableAutoAlias()
+$enableAutoLayout()
+
+$actor(Student)
+$actor(Manager)
+$aggregate(Lesson, $context = "Booking Context")
+$aggregate(Account, $context = "Booking Context")
+$aggregate(Payment, $context = "Booking Context")
+$aggregate(Lesson, $context = "Teacher Context")
+
+$screen(Registration Screen, Student)
+$command(Register Account)
+$event(Account Registered, Account)
+
+$screen(Lesson Catalog, Student, $offset = 3)
+$command(Book Lesson)
+$event(Lesson Booked, Lesson)
+$readmodel(My Lessons)
+$arrow(MyLessons, LessonCatalog)
+
+$screen(Checkout Screen, Student)
+$command(Submit Payment)
+$event(Payment Requested, Payment)
+$readmodel(Payments to Process)
+
+' A saga manages the long-running payment + fulfillment flow
+$saga(Order Fulfillment)
+$eventarrow(PaymentRequested, OrderFulfillment)
+
+$screen(Payment Approval, Manager)
+$command(Process Payment)
+$automationarrow(OrderFulfillment, ProcessPayment)
+$event(Payment Accepted, Payment)
+$readmodel(Confirmed Bookings)
+$screen(Booking Confirmation, Student)
+$arrow(ConfirmedBookings, BookingConfirmation)
+
+' A processor handles the notification side-effect
+$processor(Confirmation Email)
+$eventarrow(PaymentAccepted, ConfirmationEmail)
+
+' A translation maps lesson events across bounded contexts
+$translation(Lesson Context Bridge, $offset = 2)
+$eventarrow(LessonBooked, LessonContextBridge)
+$command(Assign Teacher, $offset = 1)
+$automationarrow(LessonContextBridge, AssignTeacher)
+$event(Teacher Assigned, Lesson1)
+
+$renderEventModelingDiagram()
+@enduml

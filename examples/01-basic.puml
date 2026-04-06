@@ -1,0 +1,42 @@
+@startuml
+!include_once ../event-model-plantuml.iuml
+
+$enableAutoAlias()
+$enableAutoLayout()
+
+' Define actor swimlanes (who interacts with the system)
+$actor(Customer)
+$actor(Manager)
+
+' Define aggregate swimlanes (domain objects that own events)
+$aggregate(Order, $context = "Order Context")
+$aggregate(Payment, $context = "Payment Context")
+
+' --- Place Order slice ---
+$screen(Product Catalog, Customer)
+$command(Place Order)
+$event(Order Placed, Order)
+$readmodel(Open Orders)
+$arrow(OpenOrders, ProductCatalog)
+
+' --- Process Payment slice ---
+$screen(Checkout Screen, Customer)
+$command(Submit Payment)
+$event(Payment Requested, Payment)
+$readmodel(Payments to Process)
+
+$screen(Payment Management, Manager)
+$command(Process Payment)
+$event(Payment Rejected, Payment)
+$readmodel(Payments to Process)
+$screen(Rejection Notice, Customer)
+$arrow(PaymentstoProcess, RejectionNotice)
+
+$event(Payment Accepted, Payment)
+$commandarrow(ProcessPayment, PaymentAccepted)
+$readmodel(Payment Receipts)
+$screen(Receipt Screen, Customer)
+$arrow(PaymentReceipts, ReceiptScreen)
+
+$renderEventModelingDiagram()
+@enduml

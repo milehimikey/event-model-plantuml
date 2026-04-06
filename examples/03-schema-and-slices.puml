@@ -1,0 +1,51 @@
+@startuml
+' Demonstrates $schema for structured field definitions and
+' $beginSlice / $endSlice for AI-parseable decomposition.
+' Note: PlantUML preprocessor requires all procedure calls on a single line.
+
+!include_once ../event-model-plantuml.iuml
+
+$enableAutoAlias()
+$enableAutoLayout()
+
+$actor(Customer)
+$aggregate(Cart, $context = "Shopping")
+$aggregate(Order, $context = "Shopping")
+$aggregate(Payment, $context = "Payments")
+
+' --- Slice 1: Add item to cart ---
+$beginSlice(AddItemToCart, $type = "StateChange", $description = "Customer adds a product to their shopping cart")
+
+$screen(Product Page, Customer, $fields = "Product image\nName & description\nPrice\nAdd to Cart button")
+$command(Add Item To Cart, $schema = "customerId:UUID:required, productId:UUID:required, quantity:int:required")
+$event(Item Added To Cart, Cart, $schema = "cartId:UUID:required, customerId:UUID:required, productId:UUID:required, quantity:int:required, addedAt:timestamp:required")
+$readmodel(Shopping Cart, $schema = "cartId, productName, quantity, unitPrice, lineTotal, cartTotal")
+$arrow(ShoppingCart, ProductPage)
+
+$endSlice()
+
+' --- Slice 2: Place order ---
+$beginSlice(PlaceOrder, $type = "StateChange", $description = "Customer reviews cart and submits the order")
+
+$screen(Cart Review, Customer, $fields = "Cart items list\nOrder total\nPlace Order button")
+$command(Place Order, $schema = "customerId:UUID:required, cartId:UUID:required, shippingAddress:Address:required")
+$event(Order Placed, Order, $schema = "orderId:UUID:required, customerId:UUID:required, cartId:UUID:required, placedAt:timestamp:required, status:string:required")
+$readmodel(My Orders, $schema = "orderId, status, placedAt, itemCount, total")
+$arrow(MyOrders, CartReview)
+
+$endSlice()
+
+' --- Slice 3: Payment processing automation ---
+$beginSlice(ProcessPayment, $type = "Automation", $description = "System processes payment via gateway when an order is placed")
+
+$automation(Payment Gateway Handler, $schema = "orderId:UUID:required, amount:Money:required, currency:string:required")
+$eventarrow(OrderPlaced, PaymentGatewayHandler)
+$command(Record Payment Result, $schema = "orderId:UUID:required, success:boolean:required, transactionId:string:optional")
+$automationarrow(PaymentGatewayHandler, RecordPaymentResult)
+$event(Payment Processed, Payment, $schema = "orderId:UUID:required, transactionId:string, success:boolean:required, processedAt:timestamp:required")
+$readmodel(Payment Status, $schema = "orderId, transactionId, status, processedAt")
+
+$endSlice()
+
+$renderEventModelingDiagram()
+@enduml
