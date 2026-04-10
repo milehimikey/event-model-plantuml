@@ -1,0 +1,62 @@
+@startuml
+!include_once https://raw.githubusercontent.com/milehimikey/event-model-plantuml/main/event-model-plantuml.iuml
+
+$enableAutoAlias()
+$enableAutoLayout()
+
+' PHASE 1: BASE EVENT MODEL (Steps 1-6)
+' Purpose: Understand the business process
+' Audience: All stakeholders
+' Content: Events, commands, read models, screens - NO policies, NO schema
+
+$actor(Customer)
+$actor(Finance)
+$aggregate(Subscription, $context = "Billing")
+$aggregate(Invoice, $context = "Billing")
+$aggregate(Payment, $context = "Billing")
+
+' Subscription workflow
+$screen(Subscription Portal, Customer)
+$command(Subscribe to Plan)
+$event(Subscription Activated, Subscription)
+$readmodel(Active Subscriptions)
+$arrow(ActiveSubscriptions, SubscriptionPortal)
+
+' Invoice generation (manual at this phase)
+$screen(Finance Portal, Finance)
+$command(Generate Invoice)
+$event(Invoice Generated, Invoice)
+$readmodel(Pending Invoices)
+$screen(Finance Portal, Finance)
+
+' Invoice delivery
+$screen(Finance Portal, Finance)
+$command(Send Invoice)
+$event(Invoice Sent, Invoice)
+$readmodel(Sent Invoices)
+$screen(Customer Portal, Customer)
+$arrow(SentInvoices, CustomerPortal)
+
+' Payment workflow
+$screen(Customer Portal, Customer)
+$command(Submit Payment)
+$event(Payment Submitted, Payment)
+$readmodel(Pending Payments)
+$screen(Finance Portal, Finance)
+
+' Payment confirmation (manual at this phase)
+$screen(Finance Portal, Finance)
+$command(Confirm Payment)
+$event(Payment Confirmed, Payment)
+$readmodel(Confirmed Payments)
+$screen(Finance Portal, Finance)
+
+' Apply payment to invoice (manual at this phase)
+$screen(Finance Portal, Finance)
+$command(Mark Invoice Paid)
+$event(Invoice Paid, Invoice)
+$readmodel(Paid Invoices)
+$screen(Finance Portal, Finance)
+
+$renderEventModelingDiagram()
+@enduml

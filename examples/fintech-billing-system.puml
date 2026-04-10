@@ -1,0 +1,118 @@
+@startuml
+!include_once https://raw.githubusercontent.com/milehimikey/event-model-plantuml/main/event-model-plantuml.iuml
+
+$enableAutoAlias()
+$enableAutoLayout()
+
+' BASE EVENT MODEL - Phase 1: Understanding the Business Process
+' Purpose: Stakeholder alignment, NO policies, NO schema details yet
+
+' Configure actors and aggregates
+$actor(Customer)
+$actor(BillingAdmin)
+$actor(FinanceTeam)
+$aggregate(Subscription, $context = "Billing")
+$aggregate(LineItem, $context = "Billing")
+$aggregate(Invoice, $context = "Billing")
+$aggregate(Payment, $context = "Billing")
+$aggregate(Reconciliation, $context = "Billing")
+
+' ===== Subscription Management =====
+$screen(Subscription Portal, Customer)
+$command(Subscribe to Plan)
+$event(Subscription Activated, Subscription)
+$readmodel(Active Subscriptions)
+$arrow(ActiveSubscriptions, SubscriptionPortal)
+
+$screen(Subscription Portal, Customer)
+$command(Change Subscription)
+$event(Subscription Changed, Subscription)
+$readmodel(Active Subscriptions)
+$screen(Subscription Portal, Customer)
+
+' ===== Line Items from External System =====
+$externalsystem(Order System, LineItem)
+$eventarrow(OrderSystem, ChargeableItemReceived)
+$event(Chargeable Item Received, LineItem)
+$readmodel(Pending Charges)
+$screen(Billing Admin Portal, BillingAdmin)
+
+' ===== Manual Charges =====
+$screen(Billing Admin Portal, BillingAdmin)
+$command(Add Manual Charge)
+$event(Manual Charge Added, LineItem)
+$readmodel(Pending Charges)
+$screen(Billing Admin Portal, BillingAdmin)
+
+' ===== Invoice Generation =====
+$screen(Finance Portal, FinanceTeam)
+$command(Generate Invoice)
+$event(Invoice Generated, Invoice)
+$readmodel(Invoices to Review)
+$screen(Finance Portal, FinanceTeam)
+
+' ===== Invoice Approval =====
+$screen(Finance Portal, FinanceTeam)
+$command(Approve Invoice)
+$event(Invoice Approved, Invoice)
+$readmodel(Approved Invoices)
+$screen(Finance Portal, FinanceTeam)
+
+' ===== Invoice Delivery =====
+$screen(Finance Portal, FinanceTeam)
+$command(Deliver Invoice)
+$event(Invoice Delivered, Invoice)
+$readmodel(Delivered Invoices)
+$screen(Customer Portal, Customer)
+$arrow(DeliveredInvoices, CustomerPortal)
+
+' ===== Payment Processing =====
+$screen(Customer Portal, Customer)
+$command(Submit Payment)
+$event(Payment Submitted, Payment)
+$readmodel(Payments Pending Verification)
+$screen(Finance Portal, FinanceTeam)
+
+' ===== Payment Confirmation =====
+$screen(Finance Portal, FinanceTeam)
+$command(Confirm Payment)
+$event(Payment Confirmed, Payment)
+$readmodel(Confirmed Payments)
+$screen(Finance Portal, FinanceTeam)
+
+$screen(Finance Portal, FinanceTeam)
+$command(Reject Payment)
+$event(Payment Rejected, Payment)
+$readmodel(Rejected Payments)
+$screen(Customer Portal, Customer)
+$arrow(RejectedPayments, CustomerPortal)
+
+' ===== Apply Payment to Invoice =====
+$screen(Finance Portal, FinanceTeam)
+$command(Apply Payment to Invoice)
+$event(Invoice Paid, Invoice)
+$readmodel(Paid Invoices)
+$screen(Finance Portal, FinanceTeam)
+
+' ===== Reconciliation =====
+$screen(Finance Portal, FinanceTeam)
+$command(Start Reconciliation)
+$event(Reconciliation Started, Reconciliation)
+$readmodel(Active Reconciliations)
+$screen(Finance Portal, FinanceTeam)
+
+$screen(Finance Portal, FinanceTeam)
+$command(Complete Reconciliation)
+$event(Reconciliation Completed, Reconciliation)
+$readmodel(Reconciliation Reports)
+$screen(Finance Portal, FinanceTeam)
+
+' ===== Subscription Cancellation =====
+$screen(Customer Portal, Customer)
+$command(Cancel Subscription)
+$event(Subscription Cancelled, Subscription)
+$readmodel(Cancelled Subscriptions)
+$screen(Customer Portal, Customer)
+
+$renderEventModelingDiagram()
+@enduml
