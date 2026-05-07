@@ -2,7 +2,7 @@
 
 A PlantUML library for creating [Event Modeling](https://eventmodeling.org/) diagrams, designed for clarity, semantic precision, and AI-assisted decomposition.
 
-Inspired by the [plantuml-event-modeling](https://github.com/chilit-nl/plantuml-event-modeling) library by Marries van de Hoef (chilit-nl). This library reimagines the element vocabulary to align with Adam Dimytruk's Event Modeling methodology and Martin Dilger's CQRS/event sourcing patterns, extends it with structured schema annotations, and adds slice markers for AI-assisted implementation decomposition.
+Inspired by the [plantuml-event-modeling](https://github.com/chilit-nl/plantuml-event-modeling) library by Marries van de Hoef (chilit-nl). This library reimagines the element vocabulary to align with Adam Dimytruk's Event Modeling methodology and Martin Dilger's CQRS/event sourcing patterns, and extends it with structured schema annotations for AI-assisted implementation decomposition.
 
 > Only the default GraphViz layout engine is supported.
 
@@ -71,9 +71,9 @@ $renderEventModelingDiagram()
 
 ![Automation example](examples/02-automation.png)
 
-### [03] Schema annotations and slice decomposition
+### [03] Schema annotations
 
-![Schema and slices example](examples/03-schema-and-slices.png)
+![Schema annotations example](examples/03-schema-annotations.png)
 
 ### [04] Policies and integrations
 
@@ -232,36 +232,6 @@ $screen(Product Page, Customer,
 
 ---
 
-## Slice Annotations
-
-Slices mark **independent, deliverable vertical units** of the event model. Each slice is a complete flow from trigger to updated read model.
-
-`$beginSlice` and `$endSlice` produce **no visual output** — they are source-level markers that AI agents parse to decompose the model into implementation tasks, acceptance criteria, or code scaffolding.
-
-```plantuml
-$beginSlice(PlaceOrder,
-    $type = "StateChange",
-    $description = "Customer places an order from the product catalog")
-
-$screen(Product Catalog, Customer)
-$command(Place Order, $schema = "customerId:UUID:required, productId:UUID:required")
-$event(Order Placed, Order, $schema = "orderId:UUID:required, placedAt:timestamp:required")
-$readmodel(My Orders)
-$arrow(MyOrders, ProductCatalog)
-
-$endSlice()
-```
-
-**Slice types** (Dimytruk's canonical patterns):
-
-| Type | Pattern | Description |
-|---|---|---|
-| `StateChange` | screen → command → event | User changes system state |
-| `StateView` | event → readmodel → screen | System shows derived data |
-| `Automation` | event → automation → command → event | Lights-out automated process |
-
----
-
 ## Rendering
 
 Place `$renderEventModelingDiagram()` as the **last statement** before `@enduml`. It triggers the two-phase layout render.
@@ -281,7 +251,6 @@ Following Adam Dimytruk's Event Modeling vocabulary:
 - **Commands** — imperative present tense: `PlaceOrder`, `ProcessPayment`
 - **Read Models** — noun phrases: `OrderList`, `PaymentHistory`
 - **Aggregates** — nouns, singular: `Order`, `Payment`, `Customer`
-- **Slices** — imperative or noun: `PlaceOrder`, `CustomerRegistration`
 
 ---
 

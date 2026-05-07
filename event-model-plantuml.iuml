@@ -7,7 +7,7 @@
 
     This library reimagines the element vocabulary to align with Adam Dimytruk's Event Modeling
     methodology and Martin Dilger's CQRS/event sourcing patterns, and extends it with
-    structured schema support and slice annotations for AI-assisted decomposition.
+    structured schema support for AI-assisted decomposition.
 
     License: MIT
 '/
@@ -836,31 +836,6 @@ Parameter conventions:
 ' Integration-styled arrow (pink).
 !unquoted procedure $integrationarrow($from, $to)
     $_addArrow($from, $to, externalsystemarrow)
-!endprocedure
-
-/'
-**************** Slice annotation procedures *********************
-
-Slices mark independent, deliverable vertical units of the event model.
-Each slice is a complete flow: screen → command → event(s) → readmodel(s).
-
-These procedures are source-level markers only — they produce no visual output.
-AI agents reading the .puml source can parse $beginSlice / $endSlice boundaries
-to identify and decompose the model into implementation tasks.
-
-Slice types (Dimytruk's canonical patterns):
-  StateChange  - screen → command → event         (user changes state)
-  StateView    - event → readmodel → screen        (system shows derived data)
-  Automation   - event → automation → command → event  (lights-out process)
-'/
-
-!unquoted procedure $beginSlice($name, $type = "StateChange", $description = "")
-    ' Slice marker — no visual output. Parseable by AI from source structure.
-    ' EM:SLICE_BEGIN name=$name type=$type description=$description
-!endprocedure
-
-!procedure $endSlice()
-    ' EM:SLICE_END
 !endprocedure
 
 /'

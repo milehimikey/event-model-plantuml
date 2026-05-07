@@ -50,7 +50,7 @@ Event modeling follows **7 steps** as defined at [eventmodeling.org](https://eve
 
 ### Example: Subscription Billing (Base Model)
 
-See [subscription-billing-base.puml](subscription-billing-base.puml) for the complete diagram.
+See [subscription-billing-base.puml](subscription-billing-base.puml) for a worked base-model example.
 
 **Characteristics:**
 - ✅ Shows the complete business flow
@@ -67,10 +67,6 @@ See [subscription-billing-base.puml](subscription-billing-base.puml) for the com
 ## Phase 2: Slicing - Add Automation (Step 7a)
 
 **Goal:** Identify which workflows should be automated.
-
-### Example: Subscription Billing with Policies
-
-See [subscription-billing-with-policies.puml](subscription-billing-with-policies.puml) for the complete diagram.
 
 **What Changed:**
 - ✅ Added **Billing Cycle Policy** - Automatically generates invoices on billing dates
@@ -94,10 +90,6 @@ $commandarrow(Billing Cycle Policy, Generate Invoice)
 
 **Goal:** Define the business logic and invariants for each policy.
 
-### Example: Policies with Business Rules
-
-See [subscription-billing-with-rules.puml](subscription-billing-with-rules.puml) for the complete diagram.
-
 **What Changed:**
 - ✅ Added fields to policies showing business rules
 
@@ -115,10 +107,6 @@ $policy(Payment Verification Policy, $fields = "Call payment gateway API\nValida
 ## Phase 4: Slicing - Add Data Structures (Step 7c)
 
 **Goal:** Specify exact fields for commands, events, and views.
-
-### Example: Complete Sliced Model
-
-See [subscription-billing-sliced.puml](subscription-billing-sliced.puml) for the complete diagram.
 
 **What Changed:**
 - ✅ Added fields to commands (input parameters)
@@ -189,11 +177,6 @@ Phase 2: Slicing
 
 ## See Also
 
-- [Base billing example](fintech-billing-system.puml) - Phase 1 complete
-- [Iterative example](iterative-example.md) - Steps 1-6 in detail
-- [Extensive example](extensive-example.md) - Complex scenario
-- [Fields reference](../FIELDS_QUICK_REFERENCE.md) - Syntax guide
-
----
-
-**Next:** See the example files referenced above for working code samples of each phase!
+- [Base billing example](fintech-billing-system.puml) — a worked base-model diagram
+- [API reference](../README.md) — element procedures, schemas, and arrows
+- [Quick reference](../EVENT_MODELING_PROCESS_QUICK_REF.md) — one-page workshop guide

@@ -113,25 +113,19 @@ Add `$policy()` elements to show what should be automated:
 - ✅ **Payment Application Policy** - Automatically apply payments to invoices
 - ❌ **Invoice Approval** - Keep as manual (Finance team review)
 
-**See:** [subscription-billing-with-policies.puml](subscription-billing-with-policies.puml) for example
-
 ### Step 7b: Define Business Rules
-Add `$fields` to policies showing logic:
+Add `$schema` to policies showing logic:
 ```plantuml
-$policy(Billing Cycle Policy, $fields = "Check billing cycle date\nGather pending charges\nCalculate proration\nValidate minimum amount")
+$policy(Billing Cycle Policy, $schema = "Check billing cycle date\nGather pending charges\nCalculate proration\nValidate minimum amount")
 ```
-
-**See:** [subscription-billing-with-rules.puml](subscription-billing-with-rules.puml) for example
 
 ### Step 7c: Specify Data Structures
-Add `$fields` to commands, events, and views:
+Add `$schema` to commands, events, and read models:
 ```plantuml
-$command(Subscribe to Plan, $fields = "customerId: UUID\nplanId: UUID\nbillingCycle: monthly|annual")
-$event(Subscription Activated, Subscription, $fields = "subscriptionId: UUID\nactivatedAt: timestamp\nstatus: active")
-$view(Active Subscriptions, $fields = "subscriptionId\nplanName\namount\nnextBillingDate")
+$command(Subscribe to Plan, $schema = "customerId:UUID:required, planId:UUID:required, billingCycle:string:required")
+$event(Subscription Activated, Subscription, $schema = "subscriptionId:UUID:required, activatedAt:timestamp:required, status:string:required")
+$readmodel(Active Subscriptions, $schema = "subscriptionId, planName, amount, nextBillingDate")
 ```
-
-**See:** [subscription-billing-sliced.puml](subscription-billing-sliced.puml) for example
 
 ### Step 7d: Prioritize Implementation Slices
 Break into vertical slices for iterative development:

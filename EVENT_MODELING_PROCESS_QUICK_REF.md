@@ -113,8 +113,8 @@ Workshop Session 2: Slicing
 ## Resources
 
 📘 **[Complete Process Guide](examples/event-modeling-phases-guide.md)** - Detailed walkthrough with examples  
-📘 **[Progressive Examples](examples/)** - Same system through all phases  
-📘 **[Fields Reference](FIELDS_QUICK_REFERENCE.md)** - Syntax for adding fields  
+📘 **[Examples directory](examples/)** - Working diagrams using this library  
+📘 **[API reference](README.md)** - Element procedures, schemas, and arrows  
 🌐 **[EventModeling.org](https://eventmodeling.org/)** - Official event modeling site  
 
 ## Remember

@@ -12,16 +12,11 @@ Event modeling is a **7-step workshop technique**. You don't create the complete
 
 **The most important lesson:** Don't add `$policy()`, `$automation()`, or `$schema` in your first diagram! These come later during slicing (Step 7).
 
-### 2. See Progressive Examples
+### 2. See a Base Model Example
 
-Learn by seeing the same system evolve through phases:
+Study a complete base model to see what Steps 1-6 look like:
 
-| Phase | File | What You'll See |
-|-------|------|-----------------|
-| **Base Model** (Steps 1-6) | [subscription-billing-base.puml](examples/subscription-billing-base.puml) | Clean business process, NO policies, NO fields |
-| **Add Policies** (Step 7a) | [subscription-billing-with-policies.puml](examples/subscription-billing-with-policies.puml) | Automation identified |
-| **Add Rules** (Step 7b) | [subscription-billing-with-rules.puml](examples/subscription-billing-with-rules.puml) | Business logic defined |
-| **Complete Spec** (Step 7c) | [subscription-billing-sliced.puml](examples/subscription-billing-sliced.puml) | Data structures specified |
+- [subscription-billing-base.puml](examples/subscription-billing-base.puml) — Clean business process, NO policies, NO fields
 
 ### 3. Quick Reference
 
@@ -224,7 +219,7 @@ $command(Order Placed)    ❌
 
 - 📘 [Event Modeling Process Guide](examples/event-modeling-phases-guide.md) - Complete walkthrough
 - 📘 [Quick Reference](EVENT_MODELING_PROCESS_QUICK_REF.md) - One-page summary
-- 📘 [Fields Reference](FIELDS_QUICK_REFERENCE.md) - Syntax for fields
+- 📘 [API reference](README.md) - Element procedures, schemas, and arrows
 - 🎓 [EventModeling.org](https://eventmodeling.org/) - Official methodology
 - 💬 Get help: Review the [examples](examples/) directory
 
