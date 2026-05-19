@@ -105,6 +105,13 @@
             LineThickness 2
         }
     }
+    ' Slice column header — labeled separator in the middle (command/read model) row
+    .sliceheader {
+        BackgroundColor #2C3E50
+        FontColor white
+        FontStyle bold
+        BorderColor #2C3E50
+    }
 </style>
 
 /'
@@ -176,6 +183,10 @@ by chilit-nl for the full explanation of this technique.
 ' Autospacing tracking
 !function $_laneWidth($laneType, $laneIndex) !return "$" + $laneType + "-" + $laneIndex + "-laneWidth"
 !$_currentWidth = "$autospacing-currentWidth"
+
+' Slices
+!function $_sliceMaxIndex() !return "$slices-maxIndex"
+!function $_slice($sliceIndex, $property) !return "$slices-" + $sliceIndex + "-" + $property
 
 ' Previous node tracking for auto-arrows
 !function $_previousNode($property) !return "$autoArrowPrevious-" + $property
@@ -802,6 +813,24 @@ Parameter conventions:
 !unquoted procedure $question($name, $laneAlias = "defaultLane", $offset = 0, $arrow = 1, $alias = "", $figure = $default_figure, $fields = "", $schema = "")
     !$laneIndex = $_lookupLaneIndex("question", $laneAlias)
     $_addNode("question", $laneIndex, $name, $alias, $figure, "question", $offset, $arrow, $fields, $schema)
+!endprocedure
+
+' Slice — marks the start of a named vertical slice column.
+' Call before the first element of each slice.
+' Inserts a labeled column header in the command/read-model (middle) row.
+' The auto-layout system propagates the column gap to all other rows.
+' Auto-arrow tracking is reset so no connections cross slice boundaries.
+!unquoted procedure $slice($name)
+    !$sliceIndex = $_getAppendIndex($_sliceMaxIndex())
+    !$alias = "sliceHeader" + $sliceIndex
+    $_set($_slice($sliceIndex, "name"), $name)
+    $_set($_slice($sliceIndex, "alias"), $alias)
+    ' Insert labeled separator in the commandview (middle/static) row
+    ' $arrow=0 prevents an inbound auto-arrow from the previous element
+    $_addNode("commandview", 0, $name, $alias, "rectangle", "sliceheader", 0, 0)
+    ' Reset previous-node tracker so nothing auto-connects FROM this separator
+    $_set($_previousNode("alias"), "")
+    $_set($_previousNode("stereotype"), "")
 !endprocedure
 
 /'
