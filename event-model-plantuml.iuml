@@ -821,6 +821,12 @@ Parameter conventions:
 ' The auto-layout system propagates the column gap to all other rows.
 ' Auto-arrow tracking is reset so no connections cross slice boundaries.
 !unquoted procedure $slice($name)
+    ' Strip surrounding quotes if caller used quoted syntax (e.g. $slice("Name"))
+    !$_q = %char(34)
+    !$_len = %strlen($name)
+    !if $_len >= 2 && %substr($name, 0, 1) == $_q
+        !$name = %substr($name, 1, $_len - 2)
+    !endif
     !$sliceIndex = $_getAppendIndex($_sliceMaxIndex())
     !$alias = "sliceHeader" + $sliceIndex
     $_set($_slice($sliceIndex, "name"), $name)
