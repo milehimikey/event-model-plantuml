@@ -121,6 +121,7 @@ skinparam linetype ortho
 skinparam defaultTextAlignment center
 
 hide <<automation>> stereotype
+hide <<sliceheader>> stereotype
 
 /'
 **************** Configuration variables *********************
