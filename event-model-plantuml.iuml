@@ -105,7 +105,7 @@
             LineThickness 2
         }
     }
-    ' Slice column header — labeled separator in the middle (command/read model) row
+    ' Slice column header — labeled title in the top row, above all content rows
     .sliceheader {
         BackgroundColor #2C3E50
         FontColor white
@@ -405,18 +405,19 @@ by chilit-nl for the full explanation of this technique.
 !endprocedure
 
 !procedure $_autoConfigureLaneTypes()
-    $_set($_laneTypeOrder(0), "automation")
-    $_set($_laneTypeOrder(1), "wireframe")
-    $_set($_laneTypeOrder(2), "commandview")
-    $_set($_laneTypeOrder(3), "event")
-    $_set($_laneTypeOrder(4), "timeline")
-    $_set($_laneTypeOrder(5), "event_persona")
-    $_set($_laneTypeOrder(6), "commandview_persona")
-    $_set($_laneTypeOrder(7), "wireframe_persona")
-    $_set($_laneTypeOrder(8), "externalsystem")
-    $_set($_laneTypeOrder(9), "question")
-    $_set($_laneTypeOrder(10), "policy")
-    $_set($_laneTypeOrderMaxIndex, 10)
+    $_set($_laneTypeOrder(0), "sliceheader")
+    $_set($_laneTypeOrder(1), "automation")
+    $_set($_laneTypeOrder(2), "wireframe")
+    $_set($_laneTypeOrder(3), "commandview")
+    $_set($_laneTypeOrder(4), "event")
+    $_set($_laneTypeOrder(5), "timeline")
+    $_set($_laneTypeOrder(6), "event_persona")
+    $_set($_laneTypeOrder(7), "commandview_persona")
+    $_set($_laneTypeOrder(8), "wireframe_persona")
+    $_set($_laneTypeOrder(9), "externalsystem")
+    $_set($_laneTypeOrder(10), "question")
+    $_set($_laneTypeOrder(11), "policy")
+    $_set($_laneTypeOrderMaxIndex, 11)
 !endprocedure
 $_autoConfigureLaneTypes()
 
@@ -827,9 +828,9 @@ Parameter conventions:
     !$alias = "sliceHeader" + $sliceIndex
     $_set($_slice($sliceIndex, "name"), $name)
     $_set($_slice($sliceIndex, "alias"), $alias)
-    ' Insert labeled separator in the commandview (middle/static) row
+    ' Insert labeled title in the sliceheader (top) row
     ' $arrow=0 prevents an inbound auto-arrow from the previous element
-    $_addNode("commandview", 0, $name, $alias, "rectangle", "sliceheader", 0, 0)
+    $_addNode("sliceheader", 0, $name, $alias, "rectangle", "sliceheader", 0, 0)
     ' Reset previous-node tracker so nothing auto-connects FROM this separator
     $_set($_previousNode("alias"), "")
     $_set($_previousNode("stereotype"), "")
